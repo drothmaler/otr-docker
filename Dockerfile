@@ -1,42 +1,52 @@
-FROM debian/eol:wheezy
+FROM debian:buster-slim
 
-MAINTAINER Juergen Bruester github@devilscab.de
+LABEL maintainer="Juergen Bruester github@devilscab.de"
 
 # add repos for avidemux		
-RUN echo "deb http://archive.deb-multimedia.org wheezy main non-free" >> /etc/apt/sources.list
-RUN echo "deb http://archive.deb-multimedia.org wheezy-backports main" >> /etc/apt/sources.list
-RUN apt-get update \
-		&& apt-get install -y --force-yes deb-multimedia-keyring \
-		&& apt-get update \
-		&& apt-get -y install curl wget dialog nano bzip2 bc avidemux-cli ffmpeg procps \
-		&& apt-get clean \
-		&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+COPY sources.list.d/*.list /etc/apt/sources.list.d/
 
+RUN apt-get update -oAcquire::AllowInsecureRepositories=true \
+	&& apt-get install -y --no-install-recommends apt-utils gnupg \
+	&& apt-get install -y --allow-unauthenticated --no-install-recommends deb-multimedia-keyring \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends  \
+		avidemux-cli  \
+		bc  \
+		bzip2  \
+		ca-certificates \
+		curl  \
+		dialog  \
+		ffmpeg  \
+		gnupg \
+		procps \
+	&& apt-get autoremove \
+	&& apt-get clean \
+	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ENV otrdecoderFileName otrdecoder-bin-x86_64-unknown-linux-gnu-0.4.1133
-RUN curl -o otrdecoder.tar.bz2 https://www.onlinetvrecorder.com/downloads/otrdecoder-bin-x86_64-unknown-linux-gnu-0.4.1133.tar.bz2
-RUN tar -xf otrdecoder.tar.bz2
+ENV TOOLS=/otr-tools
+WORKDIR ${TOOLS}
+ENV PATH $PATH:"${TOOLS}"
 
-WORKDIR ${otrdecoderFileName}
-RUN chmod +x otrdecoder
-ENV PATH $PATH:/"${otrdecoderFileName}"
+# install otrdecoder
+RUN curl -#fsSL --compressed http://www.onlinetvrecorder.com/downloads/otrdecoder-bin-64bit-linux-static-v519.tar.bz2 | tar -xj --strip-components 1 \
+	&& chmod +x otrdecoder
 
 # install multicut
-RUN echo 'alias sudo=""' >> ~/.bashrc
-RUN mkdir /home/root
-RUN curl -o multicut.sh https://raw.githubusercontent.com/crushcoder/multicut_light-1/master/multicut_light.sh
-RUN chmod +x multicut.sh
+RUN curl -#fsSLO --compressed https://raw.githubusercontent.com/crushcoder/multicut_light-1/master/multicut_light.sh \
+	&& chmod +x multicut_light.sh \
+	&& ln -s multicut_light.sh multicut.sh \
+	&& ln -s /root/ /home/root
 COPY multicut_light.rc /root/.multicut_light.rc
 
-RUN curl -o otrcut.sh https://raw.githubusercontent.com/m23project/otrcut.sh/master/otrcut.sh
-RUN chmod +x otrcut.sh
+RUN curl -#fsSLO --compressed https://raw.githubusercontent.com/m23project/otrcut.sh/master/otrcut.sh \
+	&& chmod +x otrcut.sh
 
 # batch script
-COPY functions.sh auto.sh ff.sh ffall.sh mcall.sh /${otrdecoderFileName}/
-COPY README_de.md README.md /
+COPY functions.sh auto.sh ff.sh ffall.sh mcall.sh ./
 RUN chmod +x functions.sh auto.sh ff.sh ffall.sh mcall.sh
 
-RUN mkdir /otr
+COPY README_de.md README.md /
+
 WORKDIR /otr
 
 CMD ["auto.sh"]

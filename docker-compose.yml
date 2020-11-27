@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  otr:
+    image: rootmaler/otr
+    # image: develcab/otr
+    env_file: otr-login.env
+    environment:
+      skipCleanup: 'true'
+    volumes:
+      - ~/Downloads:/otr

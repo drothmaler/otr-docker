@@ -46,9 +46,9 @@ else
 fi
 
 # cleanup (only if success)
-countOtr=`ls -1 *.otrkey 2>/dev/null | wc -l`
-countResult=`ls -1 cut/*${resultFileType} 2>/dev/null | wc -l`
-if [ "${skipCleanup}" != "true" ] && [ $countOtr == $countResult ] && [ `wc -c cut/*${resultFileType} | tail -n 1 | cut -c8-9` != "0" ]; then
+countOtr=$(ls -1 *.otrkey 2>/dev/null | wc -l)
+countResult=$(ls -1 cut/*${resultFileType} 2>/dev/null | wc -l)
+if [ "${skipCleanup}" != "true" ] && [ $countOtr == $countResult ] && [ $(wc -c cut/*${resultFileType} | tail -n 1 | cut -c8-9) != "0" ]; then
 	echo "cleanup"
 	rm -f *.otrkey
 	mv cut/*${resultFileType} ./

@@ -6,7 +6,7 @@ CONV="converted"
 ORG="original"
 
 function convertAll {
-	count=`ls -1 *.$1 2>/dev/null | wc -l`
+	count=$(ls -1 *.$1 2>/dev/null | wc -l)
 	if [ $count != 0 ]; then
 		for file in *.$1
 		do
@@ -24,7 +24,7 @@ if [ ! -d "${ORG}" ]; then
 fi
 
 
-count=`ls -1 *.m4v 2>/dev/null | wc -l`
+count=$(ls -1 *.m4v 2>/dev/null | wc -l`)
 if [ $count != 0 ]; then
 	for file in *.m4v
 	do

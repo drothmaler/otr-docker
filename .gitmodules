@@ -1,0 +1,6 @@
+[submodule "otrcut.sh"]
+	path = otrcut.sh
+	url = git@github.com:drothmaler/otrcut.sh.git
+[submodule "multicut_light"]
+	path = multicut_light
+	url = git@github.com:drothmaler/multicut_light.git

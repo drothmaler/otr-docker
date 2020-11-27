@@ -1,0 +1,2 @@
+deb http://www.deb-multimedia.org buster main non-free
+deb http://www.deb-multimedia.org buster-backports main
